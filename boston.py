@@ -12,6 +12,9 @@ from sklearn.feature_selection import RFE
 from sklearn.linear_model import RidgeCV, LassoCV, Ridge, Lasso
 # from sklearn.feature_selectionimport VarianceThreshold
 from sklearn import metrics
+from sklearn.feature_selection import VarianceThreshold
+from sklearn.ensemble import RandomForestRegressor
+# ---------------------------------------------------------
 
 from sklearn.datasets import load_boston
 
@@ -20,6 +23,7 @@ print(boston.data.shape)
 print(boston)
 
 x = load_boston()
+names = boston["feature_names"]
 df = pd.DataFrame(x.data, columns=x.feature_names)
 df["MEDV"] = x.target
 X = df.drop("MEDV", 1)
@@ -43,6 +47,7 @@ print(df[["RM", "LSTAT"]].corr())
 
 # print(X)
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3)
+
 boston_lr = LinearRegression()
 boston_lr.fit(X_train, y_train)
 print(boston_lr.coef_)
@@ -96,3 +101,33 @@ print('Root Mean Squared Error:', np.sqrt(metrics.mean_squared_error(y_test, y_p
 
 pd.Series(boston_l.coef_)
 plt.show()
+
+# -----------------------------------
+t = 0.95  # threshold
+selector = VarianceThreshold(threshold=t * (1 - t))
+selected = selector.fit_transform(X)
+# printing columns
+print(X.columns[selector.get_support()].values)
+
+boston_lr_t = LinearRegression()
+boston_lr_t.fit(X_train, y_train)
+print(boston_lr_t.coef_)
+print(boston_lr_t.intercept_)
+print('R2 for train: ', boston_lr_t.score(X_train, y_train))
+print('R2 for test: ', boston_lr_t.score(X_test, y_test))
+
+y_pred = boston_lr_t.predict(X_test)
+df = pd.DataFrame({'actual': y_test, 'pred': y_pred})
+print(df)
+
+print(pd.DataFrame(boston_lr_t.coef_))
+
+print('Mean Absolute Error:', metrics.mean_absolute_error(y_test, y_pred))
+print('Mean Squared Error:', metrics.mean_squared_error(y_test, y_pred))
+print('Root Mean Squared Error:', np.sqrt(metrics.mean_squared_error(y_test, y_pred)))
+
+# ----------------------------------
+rf = RandomForestRegressor()
+rf.fit(X, y)
+print("Features sorted by their score:")
+print(sorted(zip(map(lambda x: round(x, 4), rf.feature_importances_), names), reverse=True))
