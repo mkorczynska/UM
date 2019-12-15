@@ -45,7 +45,6 @@ for i in range(len(X)):
         correct += 1
 print("Correctly classified: ", correct)
 print("Correctly classified %: ", correct / len(X))
-
 # -----------------------------------------
 data = pd.read_csv('train.csv')
 labelEncoder = LabelEncoder()
