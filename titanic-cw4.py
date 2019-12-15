@@ -4,10 +4,32 @@ import matplotlib.pyplot as plt
 import numpy as np
 from sklearn.preprocessing import LabelEncoder
 from sklearn.cluster import KMeans
+import re
+
+from sklearn.linear_model import LogisticRegression
+from sklearn.svm import SVC
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.linear_model import SGDClassifier
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.decomposition import PCA
 from sklearn.decomposition import PCA as sklearnPCA
 
 pd.options.display.max_columns = 999
 data = pd.read_csv('train.csv')
+
+# g0 = sns.FacetGrid(data, col='Survived')
+# g0.map(plt.hist, 'Age', bins=20)
+# g1 = sns.FacetGrid(data, col='Survived')
+# g1.map(plt.hist, 'Fare', bins=20)
+# g2 = sns.FacetGrid(data, col='Survived', row='Pclass')
+# g2.map(plt.hist, 'Age', bins=20)
+# g3 = sns.FacetGrid(data, col='Survived')
+# g3.map(plt.hist, 'Age', bins=20)
+# g4 = sns.FacetGrid(data, col='Survived', row='Embarked')
+# g4.map(plt.hist, 'Age', bins=20)
+# plt.show()
+
 # print("Data\n", data)
 print("Data head\n", data.head())
 print("Data describe\n", data.describe())
@@ -30,19 +52,11 @@ for i in range(len(X)):
     pred = kmeans.predict(pred)
     if pred == y[i]:
         correct += 1
-print(correct)
-print(correct / len(X))
+print("Correctly classified: ", correct)
+print("Correctly classified %: ", correct / len(X))
 
-labels = kmeans.labels_
-print(labels)
-# check how many of the samples were correctly labeled
-# correct_labels = sum(y_var == labels)
-#
-# print("Result: %d out of %d samples were correctly labeled." % (correct_labels, y_var.size))
-#
-# sklearn_pca = sklearnPCA(n_components=3)
-# Y_sklearn = sklearn_pca.fit_transform(X_std)
-# sklearn_pca.explained_variance_ratio_
-# Y_sklearn.shape
-#
-# sklearn_pca.transform()
+data['Survived'] = y
+data = data.drop(['PassengerId'], axis=1)
+print(data.corr())
+# -----------------------------------------
+
